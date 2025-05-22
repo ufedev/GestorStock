@@ -12,7 +12,7 @@ const conexion = new Sequelize(
 )
 
 
-const nombre = await input()
+
 
 
 
@@ -41,14 +41,14 @@ while (true) {
         while (true) {
             console.clear()
             console.log(`
-                Sección categorias
-                Seleccion una opción:
-                1 - Ver todas
-                2 - Nueva Categoria
-                3 - Actualizar Categoria
-                4 - Eliminar Categoria
-                5 - Volver
-                `)
+            Sección categorias
+            Seleccion una opción:
+            1 - Ver todas
+            2 - Nueva Categoria
+            3 - Actualizar Categoria
+            4 - Eliminar Categoria
+            5 - Volver
+            `)
             const opcion_categoria = await input(": ")
             if (opcion_categoria === "5") {
                 break
@@ -69,6 +69,60 @@ while (true) {
                 console.log('Categoria agregada correctamente...')
                 await input('')
             }
+            if (opcion_categoria === '1') {
+                const cat = await conexion.query(`
+                    SELECT * FROM tipo_p_s
+                    `,
+                    {
+                        type: QueryTypes.SELECT
+                    })
+                console.log('Categorias: ')
+
+                cat.forEach(function (categoria) {
+                    console.log(categoria.id + ' -- ' + categoria.descripcion)
+                })
+
+                await input('')
+            }
+            if (opcion_categoria === '3') {
+                console.clear()
+                console.log('Seleccione la categoria actualizar: ')
+                const categorias = await conexion.query(`SELECT * FROM tipo_p_s`, {
+                    type: QueryTypes.SELECT
+                })
+                const listaIds = []
+                categorias.forEach((categoria) => {
+                    console.log(`${categoria.id} - ${categoria.descripcion}`)
+                    listaIds.push(categoria.id)
+                })
+                const id = Number(await input(': '))
+                if (listaIds.includes(id)) {
+
+
+                    const nuevo_nombre = await input('Ingrese el nuevo nombre: ')
+                    if (nuevo_nombre.trim() === "") {
+                        console.log('Raja de aca')
+                        await input('')
+                        continue
+                    }
+                    await conexion.query(`
+                    UPDATE tipo_p_s SET 
+                    descripcion = '${nuevo_nombre}'
+                    WHERE id = ${id}`,
+                        {
+                            type: QueryTypes.UPDATE
+                        })
+                    console.log('Actualizado correctamente....')
+                    await input('')
+
+                } else {
+                    console.log('Vuelva a seleccionar... una existente')
+                    await input("")
+                    continue
+                }
+                await input('')
+            }
+
 
 
         }
