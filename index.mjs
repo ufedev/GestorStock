@@ -13,9 +13,7 @@ const conexion = new Sequelize(
 
 
 
-
-
-
+// APLICACIÓN
 
 while (true) {
 
@@ -122,11 +120,49 @@ while (true) {
                 }
                 await input('')
             }
+            if (opcion_categoria === '4') {
+                const categorias = await conexion.query(`
+                    SELECT * FROM tipo_p_s
+                    `,
+                    {
+                        type: QueryTypes.SELECT
+                    }
+                )
+                console.log('Seleccione cual eliminará: ')
+                const catId = []
+                categorias.forEach(function (categoria) {
+                    console.log(`${categoria.id} -- ${categoria.descripcion}`)
+                    catId.push(categoria.id)
+                })
+                const opcion_seleccionada = await input(": ")
+                if (opcion_seleccionada === '') {
+                    console.log('No ha seleccionado nada')
+                    await input('')
+                    continue
+                }
 
+                if (!catId.includes(Number(opcion_seleccionada))) {
+                    console.log('La opción seleccionada no existe...')
+                    await input('')
+                    continue
+                }
+
+                await conexion.query(`
+                    DELETE FROM tipo_p_s WHERE id=${opcion_seleccionada}
+                    `)
+                console.log('Eliminado con éxito.')
+                await input('')
+            }
 
 
         }
     }
+
+    if (opcion === '2') {
+
+    }
+
+
 
 
 }
